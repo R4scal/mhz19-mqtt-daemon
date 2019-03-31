@@ -1,2 +1,83 @@
-# mhz19-mqtt-daemon
-Linux service to collect and transfer MH-Z19 sensor data via MQTT to Home Assistant
+# MH-Z19 Raspberry MQTT Client/Daemon
+
+A simple Linux python script to query MH-Z19 sensor on Raspberry Pi and send the data to an **MQTT** broker,
+e.g., the famous [Eclipse Mosquitto](https://projects.eclipse.org/projects/technology.mosquitto).
+After data made the hop to the MQTT broker it can be used by home automation software, like [Home Assistant](https://www.home-assistant.io/).
+
+The program can be executed in **daemon mode** to run continuously in the background, e.g., as a systemd service.
+## Features
+
+* Tested with MH-Z19 sensor
+* Build on top of [mh-z19](https://github.com/UedaTakeyuki/mh-z19/)
+* Highly configurable
+* Data publication via MQTT
+* Configurable topic and payload:
+    * using the [HomeAssistant MQTT discovery format](https://home-assistant.io/docs/mqtt/discovery/)
+* Announcement messages to support auto-discovery services
+* MQTT authentication support
+* No special/root privileges needed
+* Daemon mode (default)
+* Systemd service, sd\_notify messages generated
+* Tested on Raspberry Pi 3
+
+### Readings
+
+The DHT sensor offers the following readings:
+
+| Name            | Description |
+|-----------------|-------------|
+| `co2`           | CO2 value, in [ppm] |
+| `temperature`   | Air temperature, in [°C] |
+| `SS`            | Some kind of status byte |
+| `UhUl`          | After booting the sensor, it starts out at 15000 exactly, then typically settles to about 10500. According to the geektimes.ru page, this value is related to the minimum CO2 uncorrected concentration measured in the past day. So guess this is a relevant parameter from the ABC-algorithm. |
+
+
+## Prerequisites
+
+An MQTT broker is needed as the counterpart for this daemon.
+Even though an MQTT-less mode is provided, it is not recommended for normal smart home automation integration.
+MQTT is huge help in connecting different parts of your smart home and setting up of a broker is quick and easy.
+
+## Installation
+
+On a modern Linux system just a few steps are needed to get the daemon working.
+The following example shows the installation under Debian/Raspbian below the `/opt` directory:
+
+```shell
+sudo apt install git python3 python3-pip
+
+git clone https://github.com/R4scal/mhz19-mqtt-daemon.git /opt/mhz19-mqtt-daemon
+
+cd /opt/mhz19-mqtt-daemon
+sudo pip3 install -r requirements.txt
+```
+
+## Configuration
+
+To match personal needs, all operation details can be configured using the file [`config.ini`](config.ini.dist).
+The file needs to be created first:
+
+```shell
+cp /opt/mhz19-mqtt-daemon/config.{ini.dist,ini}
+vim /opt/mhz19-mqtt-daemon/config.ini
+```
+
+## Execution
+
+A first test run is as easy as:
+
+```shell
+python3 /opt/mhz19-mqtt-daemon/mhz19-mqtt-daemon.py
+```
+
+Using the command line argument `--config`, a directory where to read the config.ini file from can be specified, e.g.
+
+```shell
+python3 /opt/mhz19-mqtt-daemon/mhz19-mqtt-daemon.py --config /opt/mhz19-config
+```
+
+The extensive output can be reduced to error messages:
+
+```shell
+python3 /opt/mhz19-mqtt-daemon/mhz19-mqtt-daemon.py > /dev/null
+```
