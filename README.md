@@ -22,7 +22,7 @@ The program can be executed in **daemon mode** to run continuously in the backgr
 
 ### Readings
 
-The DHT sensor offers the following readings:
+The MH-Z19 sensor offers the following readings:
 
 | Name            | Description |
 |-----------------|-------------|
@@ -35,7 +35,6 @@ The DHT sensor offers the following readings:
 ## Prerequisites
 
 An MQTT broker is needed as the counterpart for this daemon.
-Even though an MQTT-less mode is provided, it is not recommended for normal smart home automation integration.
 MQTT is huge help in connecting different parts of your smart home and setting up of a broker is quick and easy.
 
 ## Installation
@@ -70,10 +69,10 @@ A first test run is as easy as:
 python3 /opt/mhz19-mqtt-daemon/mhz19-mqtt-daemon.py
 ```
 
-Using the command line argument `--config`, a directory where to read the config.ini file from can be specified, e.g.
+Using the command line argument `--config_dir`, a directory where to read the config.ini file from can be specified, e.g.
 
 ```shell
-python3 /opt/mhz19-mqtt-daemon/mhz19-mqtt-daemon.py --config /opt/mhz19-config
+python3 /opt/mhz19-mqtt-daemon/mhz19-mqtt-daemon.py --config_dir /opt/mhz19-config
 ```
 
 The extensive output can be reduced to error messages:
