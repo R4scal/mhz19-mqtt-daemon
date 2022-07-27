@@ -1,5 +1,5 @@
-mh_z19==0.3.7.2
-paho-mqtt==1.4.0
+mh_z19==3.1.3
+paho-mqtt==1.6.1
 sdnotify==0.3.2
-colorama==0.4.1
-Unidecode==1.0.23
+colorama==0.4.4
+Unidecode==1.2.0
