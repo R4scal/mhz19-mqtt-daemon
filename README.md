@@ -80,3 +80,37 @@ The extensive output can be reduced to error messages:
 ```shell
 python3 /opt/mhz19-mqtt-daemon/mhz19-mqtt-daemon.py > /dev/null
 ```
+
+## Run as systemd service
+
+1. Add the following file as `/etc/systemd/system/mhz19_mqtt.service`.
+```
+[Unit]
+Description=Get co2 sensor values and post to mqtt broker
+After=rc-local.service
+
+[Service]
+WorkingDirectory=/opt/mhz19-mqtt-daemon/
+User=pi
+ExecStart=/usr/bin/python3 /opt/mhz19-mqtt-daemon/mhz19-mqtt-daemon.py
+Restart=always
+RestartSec=30
+Type=simple
+PIDFile=/var/run/mh-z19.pid
+
+[Install]
+WantedBy=multi-user.target
+```
+2. Change `WorkingDirectory` to the path you cloned this repo to. Change the path in `ExecStart`.
+3. Reload systemd service files:
+```
+sudo systemctl daemon-reload
+```
+4. Start the service
+```
+sudo systemctl start mhz19_mqtt.service
+```
+5. Enable startup on boot
+```
+sudo systemctl enable mhz19_mqtt.service
+```
