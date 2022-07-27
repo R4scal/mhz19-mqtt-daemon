@@ -164,7 +164,7 @@ if reporting_mode == 'homeassistant-mqtt':
 # Sensor data retrieval and publication
 while True:
    print_line('Retrieving data from MH-Z19 sensor...')
-   data = mh_z19.read_all()
+   data = mh_z19.read_all(serial_console_untouched=True)
    if len(data) == 0:
       print_line('Unable to get data form sensor.', error=True, sd_notify=True)
       print()
