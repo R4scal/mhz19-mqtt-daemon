@@ -78,6 +78,7 @@ config.read([os.path.join(config_dir, 'config.ini.dist'), os.path.join(config_di
 reporting_mode = config['General'].get('reporting_method', 'homeassistant-mqtt')
 daemon_enabled = config['Daemon'].getboolean('enabled', True)
 sleep_period = config['Daemon'].getint('period', 300)
+detection_range = config['MH-Z19'].getint('detection_range', 5000)
 
 if reporting_mode == 'homeassistant-mqtt':
     default_base_topic = 'homeassistant'
@@ -159,6 +160,17 @@ if reporting_mode == 'homeassistant-mqtt':
     payload['value_template'] = "{{ value_json.UhUl }}"
     payload['name'] = "{} UhUl".format(sensor_name)
     mqtt_client.publish('{}/{}_uhul/config'.format(topic_path, sensor_name).lower(), json.dumps(payload), 1, True)
+
+
+if detection_range == 5000:
+    mh_z19.detection_range_5000(serial_console_untouched=True)
+elif detection_range == 10000:
+    mh_z19.detection_range_10000(serial_console_untouched=True)
+elif detection_range == 2000:
+    mh_z19.detection_range_2000(serial_console_untouched=True)
+else:
+    # Unknown detection range, setting to 5000
+    mh_z19.detection_range_5000(serial_console_untouched=True)
 
 # Sensor data retrieval and publication
 while True:

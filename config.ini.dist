@@ -14,6 +14,10 @@
 
 reporting_method = homeassistant-mqtt
 
+[MH-Z19]
+# Detection range of the used sensor in ppm. Currently valid options are: 2000, 5000, 10000 (Default: 5000)
+#detection_range = 5000
+
 [Daemon]
 
 # Enable or Disable an endless execution loop (Default: true)
