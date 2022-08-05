@@ -78,6 +78,7 @@ config.read([os.path.join(config_dir, 'config.ini.dist'), os.path.join(config_di
 reporting_mode = config['General'].get('reporting_method', 'homeassistant-mqtt')
 daemon_enabled = config['Daemon'].getboolean('enabled', True)
 sleep_period = config['Daemon'].getint('period', 300)
+detection_range = config['MH-Z19'].getint('detection_range', 5000)
 
 if reporting_mode == 'homeassistant-mqtt':
     default_base_topic = 'homeassistant'
@@ -99,14 +100,13 @@ if reporting_mode in ['homeassistant-mqtt']:
     mqtt_client.on_publish = on_publish
 
     if config['MQTT'].getboolean('tls', False):
-        # According to the docs, setting PROTOCOL_SSLv23 "Selects the highest protocol version
-        # that both the client and server support. Despite the name, this option can select
-        # “TLS” protocols as well as “SSL”" - so this seems like a resonable default
         mqtt_client.tls_set(
             ca_certs=config['MQTT'].get('tls_ca_cert', None),
             keyfile=config['MQTT'].get('tls_keyfile', None),
             certfile=config['MQTT'].get('tls_certfile', None),
-            tls_version=ssl.PROTOCOL_SSLv23
+            # Auto-negotiate the highest protocol version that both the client and server support, and configure the
+            # context client-side connections. Other protocol options are deprecated
+            tls_version=ssl.PROTOCOL_TLS_CLIENT
         )
 
     if config['MQTT'].get('username'):
@@ -161,10 +161,21 @@ if reporting_mode == 'homeassistant-mqtt':
     payload['name'] = "{} UhUl".format(sensor_name)
     mqtt_client.publish('{}/{}_uhul/config'.format(topic_path, sensor_name).lower(), json.dumps(payload), 1, True)
 
+
+if detection_range == 5000:
+    mh_z19.detection_range_5000(serial_console_untouched=True)
+elif detection_range == 10000:
+    mh_z19.detection_range_10000(serial_console_untouched=True)
+elif detection_range == 2000:
+    mh_z19.detection_range_2000(serial_console_untouched=True)
+else:
+    # Unknown detection range, setting to 5000
+    mh_z19.detection_range_5000(serial_console_untouched=True)
+
 # Sensor data retrieval and publication
 while True:
    print_line('Retrieving data from MH-Z19 sensor...')
-   data = mh_z19.read_all()
+   data = mh_z19.read_all(serial_console_untouched=True)
    if len(data) == 0:
       print_line('Unable to get data form sensor.', error=True, sd_notify=True)
       print()
